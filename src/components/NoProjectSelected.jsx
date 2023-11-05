@@ -1,7 +1,10 @@
+import { useContext } from "react";
 import noProjectImage from "../assets/no-projects.png";
 import Button from "./Button";
+import { ManagementContext } from "../store/management-app-store";
 
-const NoProjectSelected = ({ onStartAddProject }) => {
+const NoProjectSelected = () => {
+  const { startAddProject } = useContext(ManagementContext);
   return (
     <div className="mt-24 text-center w-2/3">
       <img
@@ -16,7 +19,7 @@ const NoProjectSelected = ({ onStartAddProject }) => {
         Select a project or get started with a new one
       </p>
       <p className="mt-8">
-        <Button onClick={onStartAddProject}>Create new project</Button>
+        <Button onClick={startAddProject}>Create new project</Button>
       </p>
     </div>
   );

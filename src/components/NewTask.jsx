@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { ManagementContext } from "../store/management-app-store";
 
-const NewTask = ({ onAddTask }) => {
+const NewTask = () => {
   const [enteredTask, setEnteredTask] = useState("");
+  const { addTask } = useContext(ManagementContext);
 
   const handleChange = (event) => {
     setEnteredTask(event.target.value);
@@ -11,7 +13,7 @@ const NewTask = ({ onAddTask }) => {
     if (enteredTask.trim() === "") {
       return;
     }
-    onAddTask(enteredTask);
+    addTask(enteredTask);
     setEnteredTask("");
   };
 
