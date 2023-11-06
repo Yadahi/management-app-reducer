@@ -17,17 +17,19 @@ const Tasks = () => {
       {projectsState.tasks.length > 0 && (
         <ul className="p-4 mt-8 rounded-md bg-stone-100">
           {projectsState.tasks.map((task) => {
-            return (
-              <li key={task.id} className="flex justify-between my-4">
-                <span>{task.text}</span>
-                <button
-                  className="text-stone-700 hover:text-red-500"
-                  onClick={() => deleteTask(task.id)}
-                >
-                  Clear
-                </button>
-              </li>
-            );
+            if (projectsState.selectedProjectId === task.projectId) {
+              return (
+                <li key={task.id} className="flex justify-between my-4">
+                  <span>{task.text}</span>
+                  <button
+                    className="text-stone-700 hover:text-red-500"
+                    onClick={() => deleteTask(task.id)}
+                  >
+                    Clear
+                  </button>
+                </li>
+              );
+            }
           })}
         </ul>
       )}

@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useReducer, useState } from "react";
 
 export const ManagementContext = createContext({
   projectsState: {
@@ -15,91 +15,124 @@ export const ManagementContext = createContext({
   deleteProject: () => {},
 });
 
+const managementReducer = (state, action) => {
+  switch (action.type) {
+    case "ADD_TASK":
+      const newTask = {
+        text: action.payload,
+        projectId: state.selectedProjectId,
+        id: Math.random(),
+      };
+      return {
+        ...state,
+        tasks: [...state.tasks, newTask],
+      };
+
+    case "DELTE_TASK":
+      return {
+        ...state,
+        tasks: state.tasks.filter((tasks) => tasks.id !== action.payload),
+      };
+
+    case "SELECT_PROJECT":
+      console.log(action);
+      return {
+        ...state,
+        selectedProjectId: action.payload,
+      };
+
+    case "START_ADD_PROJECT":
+      return {
+        ...state,
+        selectedProjectId: null,
+      };
+
+    case "ADD_PROJECT":
+      console.log("test reducer");
+      const newProject = {
+        ...action.payload,
+        id: Math.random(),
+      };
+      return {
+        ...state,
+        selectedProjectId: undefined,
+        projects: [...state.projects, newProject],
+      };
+
+    case "CANCLE_ADD_PROJECT":
+      return {
+        ...state,
+        selectedProjectId: undefined,
+      };
+
+    case "DELETE_PROJECT":
+      return {
+        ...state,
+        selectedProjectId: undefined,
+        projects: state.projects.filter(
+          (project) => project.id !== state.selectedProjectId
+        ),
+      };
+  }
+
+  return state;
+};
+
 const ManagementContextProvider = ({ children }) => {
-  const [projectsState, setProjectsState] = useState({
+  const [projectsState, managementDispatch] = useReducer(managementReducer, {
     selectedProjectId: undefined,
     projects: [],
     tasks: [],
   });
 
   const handleAddTask = (text) => {
-    setProjectsState((prevState) => {
-      const newTask = {
-        text: text,
-        projectId: prevState.selectedProjectId,
-        id: Math.random(),
-      };
-
-      return {
-        ...prevState,
-        tasks: [...prevState.tasks, newTask],
-      };
+    managementDispatch({
+      type: "ADD_TASK",
+      payload: text,
     });
   };
+
   const handleDeleteTask = (id) => {
-    console.log("delete task", id);
-    setProjectsState((prevState) => {
-      return {
-        ...prevState,
-        tasks: prevState.tasks.filter((tasks) => tasks.id !== id),
-      };
+    managementDispatch({
+      type: "DELTE_TASK",
+      payload: id,
     });
   };
 
   const handleSelectProject = (id) => {
-    setProjectsState((prevState) => {
-      return {
-        ...prevState,
-        selectedProjectId: id,
-      };
+    console.log(id);
+    managementDispatch({
+      type: "SELECT_PROJECT",
+      payload: id,
     });
   };
 
   const handleStartAddProject = () => {
-    setProjectsState((prevState) => {
-      return {
-        ...prevState,
-        selectedProjectId: null,
-      };
+    managementDispatch({
+      type: "START_ADD_PROJECT",
     });
   };
 
   const handleAddProject = (projectData) => {
-    setProjectsState((prevState) => {
-      const newProject = {
-        ...projectData,
-        id: Math.random(),
-      };
-
-      return {
-        ...prevState,
-        selectedProjectId: undefined,
-        projects: [...prevState.projects, newProject],
-      };
+    managementDispatch({
+      type: "ADD_PROJECT",
+      payload: projectData,
     });
   };
 
   const handleCancelAddProject = () => {
-    setProjectsState((prevState) => {
-      return {
-        ...prevState,
-        selectedProjectId: undefined,
-      };
+    managementDispatch({
+      type: "CANCLE_ADD_PROJECT",
     });
   };
 
   const handleDeleteProject = () => {
-    setProjectsState((prevState) => {
-      return {
-        ...prevState,
-        selectedProjectId: undefined,
-        projects: prevState.projects.filter(
-          (project) => project.id !== prevState.selectedProjectId
-        ),
-      };
+    managementDispatch({
+      type: "DELETE_PROJECT",
     });
   };
 
+  console.log(projectsState);
   const ctxValue = {
     projectsState: projectsState,
     addTask: handleAddTask,
